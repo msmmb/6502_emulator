@@ -1,12 +1,9 @@
 #include "../inc/6502.h"
+#include "../inc/ins.h"
 
 int main()
 {
     struct CPU cpu;
-    struct Memory mem;
-    reset(&cpu, &mem);
-    mem.data[0xfffc] = INS_LDA_IM;
-    mem.data[0xfffd] = 0x42;
-	execute(2, &cpu, &mem);
+    reset(&cpu);
     return 0;
 }
