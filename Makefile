@@ -1,7 +1,12 @@
 CC = gcc
-SRC = src/6502.c 
+SRC = src/main.c src/6502.c
 BIN = bin/run.o
-CFLAGS = -D_6502_H -D_INS_H -g
+CFLAGS = -g
 
-build:
-	$(CC) $(SRC) $(CFLAGS) -o $(BIN)
+all: build
+
+build: 
+	$(CC) $(CFLAGS) $(SRC) -o $(BIN)
+	
+clean:
+	rm -rf $(BIN)
