@@ -1,6 +1,6 @@
 CC = gcc
-SRC = src/main.c src/6502.c
-BIN = bin/run.o
+SRC = main.c 6502.c
+BIN = ./run.o
 CFLAGS = -g
 
 all: build

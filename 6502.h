@@ -249,19 +249,53 @@ void initialise_mem(struct CPU *cpu);
 
 void reset(struct CPU *cpu);
 		
-void tick_clock(struct CPU *cpu);
-
 byte fetch_byte(struct CPU *cpu);
 
 word fetch_word(struct CPU *cpu);
 
-byte am_immeadiate(struct CPU *cpu);
+byte read_byte(struct CPU *cpu, word address);
 
-byte am_zero_page(struct CPU *cpu);
+word read_word(struct CPU *cpu, word address);
+
+void write_byte(struct CPU *cpu, byte value, word address);
+
+void write_word(struct CPU *cpu, word value, word address);
+
+word am_immediate(struct CPU *cpu);
+
+word am_zero_page(struct CPU *cpu);
+
+word am_zero_page_x(struct CPU *cpu);
+
+word am_zero_page_y(struct CPU *cpu);
+
+word am_zero_page_y(struct CPU *cpu);
 
 word am_absolute(struct CPU *cpu);
 
-void set_zero_and_negative_flags(struct CPU *cpu, byte reg);
+word am_absolute_x(struct CPU *cpu, int add_cycle);
+
+word am_absolute_y(struct CPU *cpu, int add_cycle);
+
+word am_indirect_x(struct CPU *cpu);
+
+word am_indirect_y(struct CPU *cpu, int add_cycle);
+
+void set_ADC_flags(struct CPU *cpu, byte operand, byte result);
+
+void set_flags_ZN(struct CPU *cpu, byte value);
+
+void set_ASL_flags(struct CPU *cpu, word operand, word result);
+
+void execute_branch(struct CPU *cpu, int condition);
+
+void set_BIT_flags(struct CPU *cpu, word result);
+
+void set_CMP_CPX_CPY_flags(struct CPU *cpu, byte operand, byte reg);
+
+void set_LSR_flags(struct CPU *cpu, byte old_value, byte result);
+
+void set_SBC_flags(struct CPU *cpu, byte operand, byte result);
 
 void execute(u32 cycles, struct CPU *cpu);
 
