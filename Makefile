@@ -1,12 +1,11 @@
 CC = gcc
-SRC = main.c 6502.c
-BIN = ./run.o
+SRC = src/main.c src/6502.c
+BIN = bin/test.o
 CFLAGS = -g
 
-all: build
-
-build: 
+test: 
+	mkdir -p bin
 	$(CC) $(CFLAGS) $(SRC) -o $(BIN)
 	
 clean:
-	rm -rf $(BIN)
+	rm -rf bin

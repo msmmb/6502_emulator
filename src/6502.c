@@ -14,8 +14,8 @@ void initialise_mem(struct CPU *cpu)
 
 void reset(struct CPU *cpu)
 {
-    cpu->PC = 0xfffc;
-    cpu->SP = 0xff;
+    cpu->PC = 0xFFFC;
+    cpu->SP = 0xFF;
     cpu->SR = 0x0 | STATUS_UNUSED_FLAG;
     cpu->A = cpu->X = cpu->Y = 0;
     cpu->cycles = 0;
