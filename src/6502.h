@@ -2,6 +2,7 @@
 #define _6502_H_
 
 typedef unsigned char byte;
+typedef char s_byte;
 typedef unsigned short word;
 typedef unsigned int u32;
 
@@ -261,7 +262,7 @@ void write_byte(struct CPU *cpu, byte value, word address);
 
 void write_word(struct CPU *cpu, word value, word address);
 
-word am_immediate(struct CPU *cpu);
+int am_immediate(struct CPU *cpu);
 
 word am_zero_page(struct CPU *cpu);
 

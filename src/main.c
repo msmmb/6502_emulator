@@ -1,5 +1,4 @@
 #include <stdio.h>
-#include <stdlib.h>
 #include "6502.h"
 
 int main() {
@@ -7,11 +6,7 @@ int main() {
     reset(&cpu);
 
     FILE *fp = fopen("test_files/6502_functional_test.bin", "rb");
-    if (fp == NULL) 
-    {
-        perror("Error al abrir el archivo");
-        return 1;
-    }
+    if (fp == NULL) return 1;
 
     fread(&cpu.memory[0x000A], 1, 1024 * 64, fp);
     fclose(fp);

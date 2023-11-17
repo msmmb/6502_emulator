@@ -16,10 +16,10 @@ void reset(struct CPU *cpu)
 {
     cpu->PC = 0xFFFC;
     cpu->SP = 0xFF;
-    cpu->SR = 0x0 | STATUS_UNUSED_FLAG;
+	cpu->SR = 0x0 | STATUS_UNUSED_FLAG;
     cpu->A = cpu->X = cpu->Y = 0;
     cpu->cycles = 0;
-    initialise_mem(cpu);
+    initialise_mem(cpu)		;
 }
 		
 
@@ -32,7 +32,8 @@ byte fetch_byte(struct CPU *cpu)
 
 word fetch_word(struct CPU *cpu)
 {
-	word data = read_word(cpu, cpu->PC++);
+	word data = read_word(cpu, cpu->PC);
+	cpu->PC += 2;
     return data;
 }
 
@@ -68,9 +69,9 @@ void write_word(struct CPU *cpu, word value, word address)
 }
 
 
-word am_immediate(struct CPU *cpu)
+int am_immediate(struct CPU *cpu)
 {
-    byte address = cpu->PC++;
+    int address = cpu->PC++;
     return address;
 }
 
@@ -159,8 +160,8 @@ void set_ADC_flags(struct CPU *cpu, byte operand, byte result)
 
 void set_flags_ZN(struct CPU *cpu, byte value)
 {
-    cpu->SR |= (value == 0) ? STATUS_ZERO_FLAG : 0;
-    cpu->SR |= (value & 0x80) ? STATUS_NEGATIVE_FLAG : 0;
+	cpu->SR = (value == 0) ? (cpu->SR | STATUS_ZERO_FLAG) : (cpu->SR & ~STATUS_ZERO_FLAG);
+    cpu->SR = (value & 0x80) ? (cpu->SR | STATUS_NEGATIVE_FLAG) : (cpu->SR & ~STATUS_NEGATIVE_FLAG);
 }
 
 
@@ -174,7 +175,7 @@ void set_ASL_flags(struct CPU *cpu, word operand, word result)
 
 void execute_branch(struct CPU *cpu, int condition)
 {
-	byte rel = fetch_byte(cpu);
+	s_byte rel = fetch_byte(cpu);
 	if (condition)
 	{
 		word old_page = cpu->PC >> 8; 
@@ -224,9 +225,9 @@ void execute(u32 cycles, struct CPU *cpu)
     cpu->cycles = cycles;
     while (cpu->cycles > 0)
     {
-       byte instruction = fetch_byte(cpu);
-       switch (instruction)
-       {
+		byte instruction = fetch_byte(cpu);
+		switch (instruction)
+		{
 			case INS_ADC:
 			{
 				byte operand = read_byte(cpu, am_immediate(cpu));
@@ -780,113 +781,113 @@ void execute(u32 cycles, struct CPU *cpu)
 				cpu->PC = address;
 			} break;
 
-            case INS_LDA_IM:
-            {
-				write_byte(cpu, cpu->A, am_immediate(cpu));
-                set_flags_ZN(cpu, cpu->A);
-            } break;
+			case INS_LDA_IM:
+			{
+				cpu->A = read_byte(cpu, am_immediate(cpu));
+				set_flags_ZN(cpu, cpu->A);
+			} break;
 
-            case INS_LDA_ZP:
-            {
-				write_byte(cpu, cpu->A, am_zero_page(cpu));
-                set_flags_ZN(cpu, cpu->A);
-            } break;
+			case INS_LDA_ZP:
+			{
+				cpu->A = read_byte(cpu, am_zero_page(cpu));
+				set_flags_ZN(cpu, cpu->A);
+			} break;
 
-            case INS_LDA_ZPX:
-            {
-				write_byte(cpu, cpu->A, am_zero_page_x(cpu));
-                set_flags_ZN(cpu, cpu->A);
-            } break;
+			case INS_LDA_ZPX:
+			{
+				cpu->A = read_byte(cpu, am_zero_page_x(cpu));
+				set_flags_ZN(cpu, cpu->A);
+			} break;
 
-            case INS_LDA_ABS:
-            {
-				write_byte(cpu, cpu->A, am_absolute(cpu));
-                set_flags_ZN(cpu, cpu->A);
-            } break;
+			case INS_LDA_ABS:
+			{
+				cpu->A = read_byte(cpu, am_absolute(cpu));
+				set_flags_ZN(cpu, cpu->A);
+			} break;
 
-            case INS_LDA_ABSX:
-            {
-				write_byte(cpu, cpu->A, am_absolute_x(cpu, 0));
-                set_flags_ZN(cpu, cpu->A);
-            } break;
+			case INS_LDA_ABSX:
+			{
+				cpu->A = read_byte(cpu, am_absolute_x(cpu, 0));
+				set_flags_ZN(cpu, cpu->A);
+			} break;
 
-            case INS_LDA_ABSY:
-            {
-				write_byte(cpu, cpu->A, am_absolute_y(cpu, 0));
-                set_flags_ZN(cpu, cpu->A);
-            } break;
+			case INS_LDA_ABSY:
+			{
+				cpu->A = read_byte(cpu, am_absolute_y(cpu, 0));
+				set_flags_ZN(cpu, cpu->A);
+			} break;
 
 			case INS_LDA_INDX:
 			{
-				write_byte(cpu, cpu->A, am_indirect_x(cpu));
-                set_flags_ZN(cpu, cpu->A);
+				cpu->A = read_byte(cpu, am_indirect_x(cpu));
+				set_flags_ZN(cpu, cpu->A);
 			} break;
 
 			case INS_LDA_INDY:
 			{
-				write_byte(cpu, cpu->A, am_indirect_y(cpu, 0));
-                set_flags_ZN(cpu, cpu->A);
+				cpu->A = read_byte(cpu, am_indirect_y(cpu, 0));
+				set_flags_ZN(cpu, cpu->A);
 			} break;
 
-            case INS_LDX_IM:
-            {
-				write_byte(cpu, cpu->X, am_immediate(cpu));
-                set_flags_ZN(cpu, cpu->X);
-            } break;
+			case INS_LDX_IM:
+			{
+				cpu->X = read_byte(cpu, am_immediate(cpu));
+				set_flags_ZN(cpu, cpu->X);
+			} break;
 
-            case INS_LDX_ZP:
-            {
-				write_byte(cpu, cpu->X, am_zero_page(cpu));
-                set_flags_ZN(cpu, cpu->X);
-            } break;
+			case INS_LDX_ZP:
+			{
+				cpu->X = read_byte(cpu, am_zero_page(cpu));
+				set_flags_ZN(cpu, cpu->X);
+			} break;
 
-            case INS_LDX_ZPY:
-            {
-				write_byte(cpu, cpu->X, am_zero_page_y(cpu));
-                set_flags_ZN(cpu, cpu->X);
-            } break;
+			case INS_LDX_ZPY:
+			{
+				cpu->X = read_byte(cpu, am_zero_page_y(cpu));
+				set_flags_ZN(cpu, cpu->X);
+			} break;
 
-            case INS_LDX_ABS:
-            {
-				write_byte(cpu, cpu->X, am_absolute(cpu));
-                set_flags_ZN(cpu, cpu->X);
-            } break;
+			case INS_LDX_ABS:
+			{
+				cpu->X = read_byte(cpu, am_absolute(cpu));
+				set_flags_ZN(cpu, cpu->X);
+			} break;
 
-            case INS_LDX_ABSY:
-            {
-				write_byte(cpu, cpu->X, am_absolute_y(cpu, 0));
-                set_flags_ZN(cpu, cpu->X);
-            } break;
+			case INS_LDX_ABSY:
+			{
+				cpu->X = read_byte(cpu, am_absolute_y(cpu, 0));
+				set_flags_ZN(cpu, cpu->X);
+			} break;
 
-            case INS_LDY_IM:
-            {
-				write_byte(cpu, cpu->Y, am_immediate(cpu));
-                set_flags_ZN(cpu, cpu->Y);
-            } break;
+			case INS_LDY_IM:
+			{
+				cpu->Y = read_byte(cpu, am_immediate(cpu));
+				set_flags_ZN(cpu, cpu->Y);
+			} break;
 
-            case INS_LDY_ZP:
-            {
-				write_byte(cpu, cpu->Y, am_zero_page(cpu));
-                set_flags_ZN(cpu, cpu->Y);
-            } break;
+			case INS_LDY_ZP:
+			{
+				cpu->Y = read_byte(cpu, am_zero_page(cpu));
+				set_flags_ZN(cpu, cpu->Y);
+			} break;
 
-            case INS_LDY_ZPX:
-            {
-				write_byte(cpu, cpu->Y, am_zero_page_x(cpu));
-                set_flags_ZN(cpu, cpu->Y);
-            } break;
+			case INS_LDY_ZPX:
+			{
+				cpu->Y = read_byte(cpu, am_zero_page_x(cpu));
+				set_flags_ZN(cpu, cpu->Y);
+			} break;
 
-            case INS_LDY_ABS:
-            {
-				write_byte(cpu, cpu->Y, am_absolute(cpu));
-                set_flags_ZN(cpu, cpu->Y);
-            } break;
+			case INS_LDY_ABS:
+			{
+				cpu->Y = read_byte(cpu, am_absolute(cpu));
+				set_flags_ZN(cpu, cpu->Y);
+			} break;
 
-            case INS_LDY_ABSX:
-            {
-				write_byte(cpu, cpu->Y, am_absolute_x(cpu, 0));
-                set_flags_ZN(cpu, cpu->Y);
-            } break;
+			case INS_LDY_ABSX:
+			{
+				cpu->Y = read_byte(cpu, am_absolute_x(cpu, 0));
+				set_flags_ZN(cpu, cpu->Y);
+			} break;
 
 			case INS_LSR:
 			{
@@ -1280,7 +1281,7 @@ void execute(u32 cycles, struct CPU *cpu)
 
             default:
             {
-                printf("Unknown instruction: 0x%x\n", instruction);
+				printf("Unknown instruction: 0x%x\n", instruction);
             } break;
         }
     }
